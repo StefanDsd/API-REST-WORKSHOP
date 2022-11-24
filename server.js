@@ -1,10 +1,19 @@
 require("dotenv").config();
 
 const express = require("express");
+const connection = require("./db");
 
 const { server_port } = process.env;
 
 const app = express();
+
+connection.connect((err) => {
+    if(err) {
+        console.error('error connecting to db');
+    } else {
+        console.log('connected to db')
+    }
+});
 
 const things = [
     { id: 1, name: 'Socks' },
@@ -18,8 +27,40 @@ app.get("/", (req, res) => {
 });
 
 app.get("/products", (req, res) => {
-  res.send("products route");
+connection
+.promise()
+.query("SELECT * FROM products")
+.then(([results]) => {
+    res.json(results);
+})
+.catch((err) => {
+    console.error(err);
+    res.status(500).send("Error retrieving products from db.")
+})
 });
+app.get("/products/:id", (req, res) => {
+    let { id} = req.params;
+    connection
+    .promise()
+    .query("SELECT * FROM products WHERE product_id = ?", [id])
+    .then(([results]) => {
+        if(!results.length) {
+        res.status(404).send({
+            status: "404",
+            msg: "Not found",
+            data: null,
+        });
+    } else {
+        res.json(results);
+    } 
+    })
+    .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error retrieving products from db.")
+    });
+});
+
+
 app.get("/things", (req, res) => {
     res.send(things);
   });
