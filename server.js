@@ -14,6 +14,9 @@ app.get("/products",(req,res) => {
     res.send("products route");
 })
 
+
+console.log()
+
 app.listen(server_port, (e) => {
     if(e) {
         console.log(e);
@@ -21,3 +24,5 @@ app.listen(server_port, (e) => {
         console.log("listening to port", server_port);
     }
 });
+
+ 
