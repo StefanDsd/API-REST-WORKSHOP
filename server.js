@@ -29,18 +29,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the main route");
 });
 
-app.get("/products", (req, res) => {
-  connection
-    .promise()
-    .query("SELECT * FROM products")
-    .then(([results]) => {
-      res.json(results);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error retrieving products from db.");
-    });
-});
+
 
 app.post("/products", (req, res) => {
     const { title, price } = req.body;
@@ -56,6 +45,26 @@ app.post("/products", (req, res) => {
         res.sendStatus(500)
     });
 });
+app.get('/products', (req, res) => {
+    const { max_price } = req.query;
+    console.log(max_price)
+    let sql = 'SELECT * FROM products';
+    const valuesToEscape = [];
+    if (max_price) {
+      sql += ' WHERE price <= ?';
+      valuesToEscape.push(max_price);
+    }
+   
+    connection.promise().query(sql, valuesToEscape)
+      .then(([results]) => {
+        res.json(results);
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('Error retrieving products from db.');
+      });
+   });
+   
 
 app.get("/products/:id", (req, res) => {
   let { id } = req.params;
@@ -76,6 +85,34 @@ app.get("/products/:id", (req, res) => {
     .catch((err) => {
       console.error(err);
       res.status(500).send("Error retrieving products from db.");
+    });
+});
+
+app.put("/products/:id", (req,res) => {
+    connection
+    .promise()
+    .query("Update products SET ? WHERE product_id = ?", [req.body, req.params.id])
+    .then(([result]) => {
+        res.sendStatus(200);
+    })
+    .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+    })
+})
+
+
+
+app.delete("/products/:id", (req,res) => {
+    connection.promise()
+    .query("DELETE FROM products WHERE product_id = ?", [req.params.id])
+    .then(([result]) => {
+        if(result.affectedRows) res.sendStatus(204);
+        else res.sendStatus(404);
+    })
+    .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
     });
 });
 
