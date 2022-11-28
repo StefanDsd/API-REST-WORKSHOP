@@ -88,6 +88,9 @@ app.get("/products/:id", (req, res) => {
     });
 });
 
+
+
+
 app.put("/products/:id", (req,res) => {
     connection
     .promise()
