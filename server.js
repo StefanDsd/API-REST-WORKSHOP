@@ -33,7 +33,6 @@ app.get("/", (req, res) => {
 });
 
 
-
 app.post("/products", (req, res) => {
     const { title, price } = req.body;
     connection
@@ -137,12 +136,22 @@ app.get("/things/:id", (req, res) => {
 });
 
 app.use(express.json());
+
+
 app.post("/things", (req, res) => {
   const { name } = req.body;
   const newThing = { id: newId++, name };
   things.push(newThing);
   res.status(201).send(newThing);
 });
+
+app.put("/things", (req, res) => {
+  const { name } = req.body;
+  const newThing = { id: newId++, name };
+  things.push(newThing);
+  res.status(201).send(newThing);
+});
+
 
 app.listen(server_port, (e) => {
   if (e) {
