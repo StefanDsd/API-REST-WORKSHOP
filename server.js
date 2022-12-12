@@ -47,6 +47,7 @@ app.post("/products", (req, res) => {
         res.sendStatus(500)
     });
 });
+
 app.get('/products', (req, res) => {
     const { max_price } = req.query;
     console.log(max_price)
@@ -57,6 +58,7 @@ app.get('/products', (req, res) => {
       valuesToEscape.push(max_price);
     }
    
+    
     connection.promise().query(sql, valuesToEscape)
       .then(([results]) => {
         res.json(results);
@@ -145,12 +147,14 @@ app.post("/things", (req, res) => {
   res.status(201).send(newThing);
 });
 
+
 app.put("/things", (req, res) => {
   const { name } = req.body;
   const newThing = { id: newId++, name };
   things.push(newThing);
   res.status(201).send(newThing);
 });
+
 
 
 app.listen(server_port, (e) => {
